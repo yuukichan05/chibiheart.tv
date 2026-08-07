@@ -270,7 +270,27 @@
     </nav>
 
     <!-- Script Principal da Aplicação -->
-    <script type="module" src="js/main.js"></script>
+    <!-- ORDEM IMPORTANTE: Do mais dependente para o menos dependente -->
+    
+    <!-- 1. Fundação: Repositório (sem dependências externas) -->
+    <script src="js/modules/repository.js"></script>
+    
+    <!-- 2. Banco de dados (sem dependências externas) -->
+    <script src="js/modules/db.js"></script>
+    
+    <!-- 3. Utilitários de UI (sem dependências externas) -->
+    <script src="js/modules/splash.js"></script>
+    
+    <!-- 4. Pesquisa (depende de repository) -->
+    <script src="js/modules/pesquisa.js"></script>
+    
+    <!-- 5. Telas (dependem de repository e db) -->
+    <script src="js/modules/inicio.js"></script>
+    <script src="js/modules/info.js"></script>
+    <script src="js/modules/playerView.js"></script>
+    
+    <!-- 6. Bootstrap principal (depende de todos os anteriores) -->
+    <script src="js/main.js"></script>
 
     <!-- Registro do Service Worker -->
     <script>
