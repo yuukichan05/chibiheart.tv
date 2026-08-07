@@ -1,0 +1,376 @@
+/* ==========================================================================
+   PLAYER DE VÍDEO CUSTOMIZADO (NATIVO HTML5) - TV FIRST
+   ========================================================================== */
+
+/* ESTRUTURA PRINCIPAL DO PLAYER */
+#player {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    color: var(--text-main, #ffffff);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.player-media-block {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    position: relative;
+    z-index: 10;
+}
+
+/* WRAPPER DO PLAYER */
+.custom-player-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* VÍDEO - Mantém proporção 16:9 sem overflow */
+.custom-player-wrapper video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* Ajustes de Tela Cheia Nativa */
+.custom-player-wrapper:fullscreen,
+.custom-player-wrapper:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+}
+
+.custom-player-wrapper:fullscreen video,
+.custom-player-wrapper:-webkit-full-screen video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   CONTROLES DO PLAYER
+   ========================================================================== */
+
+/* Container de Controles */
+.custom-player-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.3) 0%,
+        rgba(0, 0, 0, 0) 30%,
+        rgba(0, 0, 0, 0) 65%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px 20px;
+    z-index: 5;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+/* Esconde os controles após inatividade */
+.custom-player-controls.controls-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   TÍTULO E META DO EPISÓDIO (PARTE SUPERIOR)
+   ========================================================================== */
+
+.player-episode-detail {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 20;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    max-width: 80%;
+}
+
+.player-meta {
+    color: #e50914;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    display: block;
+}
+
+.player-episode-detail h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 6px 0 0 0;
+    color: #ffffff;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+    display: block;
+}
+
+/* ==========================================================================
+   BOTÕES DO CENTRO (PLAY, REWIND, FORWARD)
+   ========================================================================== */
+
+.btn-player-center {
+    position: absolute !important;
+    top: 50% !important;
+    z-index: 10 !important;
+    border: none !important;
+    cursor: pointer !important;
+    outline: none;
+    transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Botão Play/Pause Central */
+.btn-player-center.btn-play {
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    background: var(--accent-gradient, linear-gradient(135deg, #ff76b7, #ff4081)) !important;
+    box-shadow: 0 0 20px rgba(255, 118, 183, 0.6) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-player-center.btn-play .material-symbols-outlined {
+    font-size: 48px !important;
+    color: #ffffff !important;
+}
+
+.btn-player-center.btn-play:hover,
+.btn-player-center.btn-play:focus {
+    transform: translate(-50%, -50%) scale(1.1) !important;
+    box-shadow: 0 0 28px rgba(255, 118, 183, 0.9) !important;
+}
+
+/* Botão Voltar 10s */
+.btn-player-center.btn-rewind {
+    left: calc(50% - 100px) !important;
+    transform: translate(-50%, -50%) !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Botão Avançar 10s */
+.btn-player-center.btn-fast-forward {
+    left: calc(50% + 100px) !important;
+    transform: translate(-50%, -50%) !important;
+    width: 56px !important;
+    height: 56px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-player-center.btn-rewind .material-symbols-outlined,
+.btn-player-center.btn-fast-forward .material-symbols-outlined {
+    font-size: 32px !important;
+    color: #ffffff !important;
+    display: inline-block;
+}
+
+.btn-player-center.btn-rewind:hover,
+.btn-player-center.btn-fast-forward:hover,
+.btn-player-center.btn-rewind:focus,
+.btn-player-center.btn-fast-forward:focus {
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: translate(-50%, -50%) scale(1.1) !important;
+}
+
+/* Animações de Rotação 360 */
+@keyframes spinRewind {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+@keyframes spinForward {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.btn-player-center.btn-rewind:active .material-symbols-outlined {
+    animation: spinRewind 0.8s cubic-bezier(0.25, 1.5, 0.25, 1);
+}
+
+.btn-player-center.btn-fast-forward:active .material-symbols-outlined {
+    animation: spinForward 0.8s cubic-bezier(0.25, 1.5, 0.25, 1);
+}
+
+.btn-player-center.btn-rewind:active,
+.btn-player-center.btn-fast-forward:active {
+    transform: translate(-50%, -50%) scale(0.95) !important;
+}
+
+/* Remove o ícone de TV/Cast no Chrome, Edge e Safari */
+video::-webkit-media-controls-cast-button {
+    display: none !important;
+}
+
+/* ==========================================================================
+   BARRA INFERIOR (PROGRESSO E CONTROLES)
+   ========================================================================== */
+
+.custom-bottom-bar {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: auto;
+}
+
+.custom-progress-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+}
+
+/* Input Range customizado para a Barra de Progresso */
+.custom-progress-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+    transition: height 0.2s ease;
+}
+
+.custom-progress-slider:hover {
+    height: 8px;
+}
+
+.custom-progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ff4081;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255, 64, 129, 0.8);
+}
+
+.custom-progress-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #ff4081;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 8px rgba(255, 64, 129, 0.8);
+}
+
+/* Linha de Tempo e Tela Cheia */
+.custom-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0 4px;
+}
+
+.custom-time-display {
+    font-size: 0.85rem;
+    color: #e2e8f0;
+    font-weight: 600;
+}
+
+.btn-player-icon {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
+    transition: transform 0.2s ease;
+}
+
+.btn-player-icon .material-symbols-outlined {
+    font-size: 28px;
+}
+
+.btn-player-icon:hover,
+.btn-player-icon:focus {
+    transform: scale(1.15);
+}
+
+/* ==========================================================================
+   RESPONSIVIDADE PARA DIFERENTES TAMANHOS DE TELA
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .btn-player-center.btn-rewind {
+        left: calc(50% - 70px) !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+
+    .btn-player-center.btn-fast-forward {
+        left: calc(50% + 70px) !important;
+        width: 48px !important;
+        height: 48px !important;
+    }
+
+    .btn-player-center.btn-play {
+        width: 64px !important;
+        height: 64px !important;
+    }
+
+    .player-episode-detail h2 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn-player-center.btn-rewind {
+        left: calc(50% - 60px) !important;
+    }
+
+    .btn-player-center.btn-fast-forward {
+        left: calc(50% + 60px) !important;
+    }
+}

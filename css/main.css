@@ -1,0 +1,429 @@
+/* ==========================================
+   RESET E CONFIGURAÇÕES GERAIS
+   ========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+:root {
+    --bg-color: #141414;
+    --text-color: #ffffff;
+    --text-secondary: #aaaaaa;
+    --accent-red: #e50914;
+
+    /* Dimensões Estáticas */
+    --sidebar-width: 260px;
+    --sidebar-collapsed-visible: 80px; /* largura visível quando recolhida */
+    --sidebar-collapsed-offset: calc(-1 * (var(--sidebar-width) - var(--sidebar-collapsed-visible)));
+    --label-gap: 16px; /* distância entre ícone e rótulo */
+
+    /* Espaço fixo coerente para o conteúdo (evita percentuais enormes em telas largas)
+       REDUZI para deixar as seções mais próximas da sidebar */
+    --content-inset: calc(var(--sidebar-collapsed-visible) + 18px);
+
+    /* deslocamento quando a sidebar expande (dinâmico) */
+    --shift-amount: calc(var(--sidebar-width) - var(--sidebar-collapsed-visible));
+
+    /* Transição de GPU global */
+    --gpu-transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.28s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    overflow-x: hidden;
+    display: flex;
+    min-height: 100vh;
+}
+
+.main-header {
+    display: none;
+}
+
+.app-view {
+    display: none;
+}
+
+.app-view.active {
+    display: block;
+}
+
+/* ==========================================
+   SIDEBAR (GPU-ACCELERATED TRANSFORMS)
+   ========================================= */
+.tab-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: var(--sidebar-width);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.85) 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 12px;
+    z-index: 1000;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+
+    will-change: transform;
+    transform: translateX(var(--sidebar-collapsed-offset));
+    transition: var(--gpu-transition);
+}
+
+/* Expand sidebar (hover/focus-within) via GPU transform only */
+.tab-bar:hover,
+.tab-bar:focus-within {
+    transform: translateX(0);
+}
+
+.tab-bar .tab-item {
+    position: relative;
+    display: block;
+    height: 60px;
+    margin: 6px 0;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 0 12px;
+    transition: color 0.18s ease;
+    overflow: visible;
+    outline: none;
+}
+
+/* Ícone sempre à direita do bloco do botão (permite rótulo aparecer à esquerda) */
+.tab-bar .tab-item .material-symbols-outlined {
+    font-size: 32px;
+    color: inherit;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    will-change: transform;
+}
+
+/* Rótulo absoluto (content: attr(aria-label)) */
+.tab-bar .tab-item::before {
+    content: attr(aria-label);
+    position: absolute;
+    right: calc(12px + 32px + var(--label-gap));
+    top: 50%;
+    transform: translateX(8px) translateY(-50%);
+    opacity: 0;
+    color: var(--text-color);
+    font-weight: 700;
+    white-space: nowrap;
+    pointer-events: none;
+    will-change: transform, opacity;
+    transition: var(--gpu-transition);
+    text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+    font-size: 1.05rem;
+}
+
+.tab-bar:hover .tab-item::before,
+.tab-bar:focus-within .tab-item::before {
+    transform: translateX(0) translateY(-50%);
+    opacity: 1;
+}
+
+.tab-bar .tab-item:hover,
+.tab-bar .tab-item:focus,
+.tab-bar .tab-item.active {
+    color: var(--text-color);
+    outline: none;
+}
+
+.tab-bar .tab-item.active {
+    color: var(--accent-red);
+}
+
+/* ==========================================
+   CONTEÚDO PRINCIPAL (SLIDE VIA GPU)
+   ========================================= */
+.main-content {
+    /* mantém a faixa visível da sidebar sempre */
+    margin-left: var(--sidebar-collapsed-visible);
+    width: calc(100% - var(--sidebar-collapsed-visible));
+    min-height: 100vh;
+
+    will-change: transform;
+    transform: translateX(0);
+    transition: var(--gpu-transition);
+}
+
+/* Quando a sidebar expande, empurra a main por transform */
+body:has(.tab-bar:hover) .main-content,
+body:has(.tab-bar:focus-within) .main-content {
+    transform: translateX(var(--shift-amount));
+}
+
+/* ==========================================
+   VIEW INÍCIO - HERO BANNER 16/9
+   ========================================= */
+.hero-banner {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 75vh;
+    overflow: hidden;
+    background-color: #000;
+    border-bottom: 6px solid rgba(0,0,0,0.25);
+}
+
+.hero-banner-slide {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-banner-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    will-change: transform;
+    transition: transform 12s linear;
+}
+
+.hero-banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, #141414 0%, rgba(20, 20, 20, 0.35) 40%, rgba(20, 20, 20, 0.85) 100%),
+                linear-gradient(90deg, #141414 0%, rgba(20,20,20,0.0) 55%);
+    pointer-events: none;
+}
+
+/* Usa o mesmo recuo fixo do conteúdo para alinhamento coerente */
+.hero-banner-content {
+    position: absolute;
+    bottom: 12%;
+    left: var(--content-inset);
+    max-width: 700px;
+    z-index: 2;
+    will-change: transform, opacity;
+}
+
+/* Badge/titulo/descrição */
+.hero-badge-tag {
+    background-color: var(--accent-red);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 6px 10px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+}
+
+.hero-banner-title {
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    font-weight: 800;
+    margin: 12px 0;
+    line-height: 1.05;
+    text-shadow: 2px 2px 14px rgba(0, 0, 0, 0.75);
+}
+
+.hero-banner-desc {
+    font-size: 1.02rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Hero actions com ênfase e animação por transform */
+.hero-actions {
+    display: flex;
+    gap: 14px;
+}
+
+/* =========================
+   BOTÕES DO HERO (Assistir / Detalhes)
+   - Reintegrados do CSS antigo e refinados
+   - Mantive apenas transform/opacity para animações
+   ========================= */
+.btn-hero {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    will-change: transform, opacity;
+    transition: var(--gpu-transition);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    border: 0;
+}
+
+.btn-hero-play {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+}
+
+.btn-hero-info {
+    background-color: rgba(109, 109, 110, 0.75);
+    color: #ffffff;
+    box-shadow: none;
+}
+
+/* Ícone interno (material symbol) padding e tamanho */
+.btn-hero .material-symbols-outlined {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+/* Hover / Focus — apenas transform e mudanças de cor simples */
+.btn-hero:hover,
+.btn-hero:focus {
+    transform: scale(1.06);
+    outline: none;
+}
+
+.btn-hero-play:hover,
+.btn-hero-play:focus {
+    background-color: rgba(255,255,255,0.92);
+}
+
+.btn-hero-info:hover,
+.btn-hero-info:focus {
+    background-color: rgba(109,109,110,0.6);
+}
+
+/* Foco acessível (remoto/teclado) */
+.btn-hero:focus-visible {
+    outline: 3px solid rgba(255,255,255,0.08);
+    outline-offset: 6px;
+}
+
+/* ==========================================
+   SEÇÕES (ALINHAR TANTO .secao-categoria quanto .secao-genero-container)
+   - Usa recuo fixo para evitar espaçamentos variáveis em telas largas
+   ========================================= */
+.secao-categoria,
+.secao-genero-container {
+    padding: 24px 0 24px;
+    padding-left: var(--content-inset); /* alinhamento consistente com o hero */
+}
+
+/* Ajuste fino para títulos */
+.titulo-categoria {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #e5e5e5;
+}
+
+/* Grid horizontal com scroll */
+.cards-grid {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: 16px;
+    padding-top: 8px;
+    padding-left: 0; /* removido padding extra que somava deslocamento */
+}
+
+.cards-grid::-webkit-scrollbar {
+    height: 0px;
+}
+
+/* Cards Proporção 2/3 */
+.card.poster {
+    flex: 0 0 auto;
+    width: 220px;
+    text-decoration: none;
+    color: var(--text-color);
+    will-change: transform;
+    transition: transform 220ms cubic-bezier(.2,1,.22,1);
+    outline: none;
+    position: relative;
+    border-radius: 8px;
+}
+
+.card-media {
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #222;
+}
+
+.card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    margin-top: 10px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 400;
+}
+
+/* Hover/focus - transform only */
+.card.poster:hover,
+.card.poster:focus {
+    transform: scale(1.14);
+    z-index: 12;
+}
+
+.card.poster:hover .card-title,
+.card.poster:focus .card-title {
+    color: var(--text-color);
+    font-weight: 700;
+}
+
+/* Barra de progresso via transform */
+.barra-progresso-preenchimento {
+    width: 100%;
+    height: 100%;
+    background-color: var(--accent-red);
+    transform-origin: left center;
+    will-change: transform;
+    transform: scaleX(0);
+    transition: transform 0.22s linear;
+}
+
+/* Foco acessível */
+.tab-bar .tab-item:focus-visible,
+.card.poster:focus-visible,
+.btn-hero:focus-visible {
+    outline: 3px solid rgba(255,255,255,0.08);
+    outline-offset: 6px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+/* ==========================================
+   Pequenos ajustes responsivos
+   ========================================= */
+@media (max-width: 1100px) {
+    :root {
+        --content-inset: calc(var(--sidebar-collapsed-visible) + 12px);
+    }
+    .card.poster { width: 180px; }
+}
+
+@media (min-width: 1700px) {
+    /* em telas muito largas, aumenta o tamanho dos cards sem usar percentuais para evitar gaps */
+    .card.poster { width: 240px; }
+}
+
+/* ==========================================
+   Notas: resto do arquivo preservado para outras views (player, info etc.)
+   ========================================= */
