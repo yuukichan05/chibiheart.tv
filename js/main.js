@@ -1,18 +1,6 @@
 // js/main.js
-
-// 🔄 IMPORTS UNIFICADOS
-import { 
-  carregarHeroBanner, 
-  carregarAnimesRecomendados, 
-  carregarAnimesRecentes, 
-  carregarNovosEpisodios, 
-  carregarAnimesPorGenero 
-} from './modules/inicio.js';
-
-import { gerenciarTelaInfo, fecharOverlayEp } from './modules/info.js';
-import { gerenciarTelaPlayer } from './modules/playerView.js';
-import { inicializarPesquisa } from './modules/pesquisa.js';
-import { ocultarSplashScreen, exibirErroSplash } from './modules/splash.js';
+// Este arquivo agora funciona como bootstrap de funções globais
+// Remova os imports/exports e adicione <script> tags na ordem correta no HTML
 
 // --- CONTROLE DE SCROLL DO CABEÇALHO SUPERIOR ---
 function inicializarScrollHeader() {
@@ -144,7 +132,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     inicializarPesquisa();
     inicializarNavegacaoTV();
-    inicializarScrollHeader(); // 👈 Ativa o controle do cabeçalho na rolagem
+    inicializarScrollHeader();
 
     window.addEventListener("hashchange", async () => {
       try {

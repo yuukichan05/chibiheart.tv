@@ -1,7 +1,5 @@
 // js/modules/pesquisa.js
 
-import { obterInfoCompleta } from './repository.js';
-
 /**
  * Remove acentos e converte para minúsculas para facilitar a comparação
  */
@@ -12,7 +10,7 @@ function normalizarTexto(texto) {
         .toLowerCase();
 }
 
-export async function inicializarPesquisa() {
+async function inicializarPesquisa() {
     const inputBusca = document.getElementById("input-busca");
     const gradeResultados = document.getElementById("grade-resultados-busca");
     const modeloCard = document.getElementById("modelo-card-anime");
@@ -31,7 +29,7 @@ export async function inicializarPesquisa() {
             return;
         }
 
-        // 📡 Obtém os dados centralizados via Repositório (que já gerencia o cache em memória)
+        // ���� Obtém os dados centralizados via Repositório (que já gerencia o cache em memória)
         const bancoDados = await obterInfoCompleta();
 
         if (!bancoDados) return;

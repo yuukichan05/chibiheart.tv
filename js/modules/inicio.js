@@ -1,17 +1,9 @@
 // js/modules/inicio.js
 
-import { 
-  obterInfoCompleta, 
-  obterHeroBanner, 
-  obterRecomendados, 
-  obterRecentes, 
-  obterNovosEpisodios 
-} from './repository.js';
-
 /**
  * 1. Carrega o Hero Banner principal no topo da Home
  */
-export async function carregarHeroBanner() {
+async function carregarHeroBanner() {
   const container = document.getElementById('hero-banner');
   const template = document.getElementById('modelo-hero-banner');
   
@@ -93,7 +85,7 @@ export async function carregarHeroBanner() {
 /**
  * 2. Carrega os animes Recomendados / Destaques
  */
-export async function carregarAnimesRecomendados() {
+async function carregarAnimesRecomendados() {
     const grade = document.getElementById("grade-recomendados");
     const modelo = document.getElementById("modelo-card-anime");
 
@@ -138,7 +130,7 @@ export async function carregarAnimesRecomendados() {
 /**
  * 3. Carrega os animes Adicionados Recentes
  */
-export async function carregarAnimesRecentes() {
+async function carregarAnimesRecentes() {
     const grade = document.getElementById("grade-recentes");
     const modelo = document.getElementById("modelo-card-anime");
 
@@ -183,7 +175,7 @@ export async function carregarAnimesRecentes() {
 /**
  * 4. Carrega os Lançamentos de novos episódios
  */
-export async function carregarNovosEpisodios() {
+async function carregarNovosEpisodios() {
     const grade = document.getElementById("grade-novos-episodios");
     const modelo = document.getElementById("modelo-card-anime");
 
@@ -243,7 +235,7 @@ export async function carregarNovosEpisodios() {
 /**
  * 5. Carrega as Seções organizadas por Gênero
  */
-export async function carregarAnimesPorGenero() {
+async function carregarAnimesPorGenero() {
     const containerPrincipal = document.getElementById("inicio");
     const modeloSecao = document.getElementById("modelo-secao-genero");
     const modeloCard = document.getElementById("modelo-card-anime");

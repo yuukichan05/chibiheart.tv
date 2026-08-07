@@ -30,7 +30,7 @@ function abrirBanco() {
  * @param {number} tempo - Segundo atual do player
  * @param {number} total - Duração total do vídeo
  */
-export async function salvarProgressoDB(epId, tempo, total) {
+async function salvarProgressoDB(epId, tempo, total) {
   try {
     const db = await abrirBanco();
     return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export async function salvarProgressoDB(epId, tempo, total) {
  * @param {string} epId 
  * @param {boolean} concluido 
  */
-export async function alternarConcluidoDB(epId, concluido = true) {
+async function alternarConcluidoDB(epId, concluido = true) {
   try {
     const db = await abrirBanco();
     return new Promise((resolve, reject) => {
@@ -101,7 +101,7 @@ export async function alternarConcluidoDB(epId, concluido = true) {
  * Busca o progresso de um episódio específico
  * @param {string} epId 
  */
-export async function buscarProgressoDB(epId) {
+async function buscarProgressoDB(epId) {
   try {
     const db = await abrirBanco();
     return new Promise((resolve, reject) => {
@@ -121,7 +121,7 @@ export async function buscarProgressoDB(epId) {
 /**
  * Busca o progresso de TODOS os episódios de uma vez (otimizado para listagens)
  */
-export async function buscarTodoProgressoDB() {
+async function buscarTodoProgressoDB() {
   try {
     const db = await abrirBanco();
     return new Promise((resolve, reject) => {

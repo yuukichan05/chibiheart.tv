@@ -3,7 +3,7 @@
 /**
  * Oculta a Splash Screen com uma animação suave de fade-out
  */
-export function ocultarSplashScreen() {
+function ocultarSplashScreen() {
   const splash = document.getElementById("splash-screen");
   if (splash && !splash.classList.contains("fade-out")) {
     splash.classList.add("fade-out");
@@ -13,7 +13,7 @@ export function ocultarSplashScreen() {
 /**
  * Substitui o ícone de carregamento pela mensagem e detalhes do erro
  */
-export function exibirErroSplash(mensagemUsuario, erroTecnico) {
+function exibirErroSplash(mensagemUsuario, erroTecnico) {
   const loadingArea = document.getElementById("splash-loading");
   const errorArea = document.getElementById("splash-error");
   const errorMsg = document.getElementById("splash-error-msg");
