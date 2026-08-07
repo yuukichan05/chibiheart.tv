@@ -9,7 +9,7 @@ let cacheNovosEpisodios = null;
 /**
  * Busca e armazena em cache os dados do info.json
  */
-async function obterInfoCompleta() {
+export async function obterInfoCompleta() {
   if (cacheInfo) return cacheInfo;
 
   try {
@@ -26,7 +26,7 @@ async function obterInfoCompleta() {
 /**
  * Retorna os dados de um anime específico pelo ID
  */
-async function obterAnimePorId(animeId) {
+export async function obterAnimePorId(animeId) {
   if (!animeId) return null;
   const info = await obterInfoCompleta();
   return info ? info[animeId] || null : null;
@@ -35,7 +35,7 @@ async function obterAnimePorId(animeId) {
 /**
  * Busca a lista do hero banner
  */
-async function obterHeroBanner() {
+export async function obterHeroBanner() {
   if (cacheHeroBanner) return cacheHeroBanner;
 
   try {
@@ -52,7 +52,7 @@ async function obterHeroBanner() {
 /**
  * Busca a lista de animes recomendados
  */
-async function obterRecomendados() {
+export async function obterRecomendados() {
   if (cacheRecomendados) return cacheRecomendados;
 
   try {
@@ -69,7 +69,7 @@ async function obterRecomendados() {
 /**
  * Busca a lista de animes adicionados recentemente
  */
-async function obterRecentes() {
+export async function obterRecentes() {
   if (cacheRecentes) return cacheRecentes;
 
   try {
@@ -86,7 +86,7 @@ async function obterRecentes() {
 /**
  * Busca a lista de novos episódios
  */
-async function obterNovosEpisodios() {
+export async function obterNovosEpisodios() {
   if (cacheNovosEpisodios) return cacheNovosEpisodios;
 
   try {
@@ -103,7 +103,7 @@ async function obterNovosEpisodios() {
 /**
  * Limpa o cache caso precise forçar a atualização dos dados sem recarregar a página
  */
-function limparCacheRepository() {
+export function limparCacheRepository() {
   cacheInfo = null;
   cacheHeroBanner = null;
   cacheRecomendados = null;

@@ -1,9 +1,16 @@
 // js/modules/inicio.js
 
+import { 
+  obterInfoCompleta, 
+  obterHeroBanner, 
+  obterRecomendados, 
+  obterRecentes 
+} from './repository.js';
+
 /**
  * 1. Carrega o Hero Banner principal no topo da Home
  */
-async function carregarHeroBanner() {
+export async function carregarHeroBanner() {
   const container = document.getElementById('hero-banner');
   const template = document.getElementById('modelo-hero-banner');
   
@@ -85,7 +92,7 @@ async function carregarHeroBanner() {
 /**
  * 2. Carrega os animes Recomendados / Destaques
  */
-async function carregarAnimesRecomendados() {
+export async function carregarAnimesRecomendados() {
     const grade = document.getElementById("grade-recomendados");
     const modelo = document.getElementById("modelo-card-anime");
 
@@ -130,7 +137,7 @@ async function carregarAnimesRecomendados() {
 /**
  * 3. Carrega os animes Adicionados Recentes
  */
-async function carregarAnimesRecentes() {
+export async function carregarAnimesRecentes() {
     const grade = document.getElementById("grade-recentes");
     const modelo = document.getElementById("modelo-card-anime");
 
@@ -173,69 +180,9 @@ async function carregarAnimesRecentes() {
 }
 
 /**
- * 4. Carrega os Lançamentos de novos episódios
+ * 4. Carrega as Seções organizadas por Gênero
  */
-async function carregarNovosEpisodios() {
-    const grade = document.getElementById("grade-novos-episodios");
-    const modelo = document.getElementById("modelo-card-anime");
-
-    if (!grade || !modelo) return;
-
-    try {
-        const [listaNovos, infoCompleta] = await Promise.all([
-            obterNovosEpisodios(),
-            obterInfoCompleta()
-        ]);
-
-        if (!listaNovos || !infoCompleta) return;
-
-        grade.innerHTML = "";
-
-        listaNovos.forEach(item => {
-            const anime = infoCompleta[item.animeId];
-            if (!anime) return;
-
-            let epEncontrado = null;
-            if (Array.isArray(anime.temporadas)) {
-                for (const temp of anime.temporadas) {
-                    const ep = temp.episodios?.find(e => e.id === item.epId);
-                    if (ep) {
-                        epEncontrado = ep;
-                        break;
-                    }
-                }
-            }
-
-            if (!epEncontrado) return;
-
-            const clone = modelo.content.cloneNode(true);
-            const linkCard = clone.querySelector("a");
-            const imgCard = clone.querySelector("img");
-            const tituloCard = clone.querySelector(".card-title");
-
-            if (linkCard && imgCard && tituloCard) {
-                linkCard.classList.remove("poster");
-                linkCard.classList.add("horizontal");
-
-                linkCard.href = `#player?anime=${encodeURIComponent(item.animeId)}&ep=${encodeURIComponent(item.epId)}`;
-                imgCard.src = epEncontrado.thumb || anime.poster || anime.banner || "";
-                imgCard.alt = epEncontrado.titulo;
-
-                tituloCard.textContent = epEncontrado.titulo;
-
-                grade.appendChild(clone);
-            }
-        });
-
-    } catch (erro) {
-        console.error("❌ [Novos Episódios] Falha ao carregar:", erro);
-    }
-}
-
-/**
- * 5. Carrega as Seções organizadas por Gênero
- */
-async function carregarAnimesPorGenero() {
+export async function carregarAnimesPorGenero() {
     const containerPrincipal = document.getElementById("inicio");
     const modeloSecao = document.getElementById("modelo-secao-genero");
     const modeloCard = document.getElementById("modelo-card-anime");
