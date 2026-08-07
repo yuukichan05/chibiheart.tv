@@ -1,76 +1,19 @@
 // js/main.js
-// Este arquivo agora funciona como bootstrap de funções globais
-// Remova os imports/exports e adicione <script> tags na ordem correta no HTML
 
-// --- CONTROLE DE SCROLL DO CABEÇALHO SUPERIOR ---
-function inicializarScrollHeader() {
-  let lastScrollY = window.scrollY;
-  const header = document.querySelector('.main-header');
+// 🔄 IMPORTS DOS MÓDULOS
+import { 
+  carregarHeroBanner, 
+  carregarAnimesRecomendados, 
+  carregarAnimesRecentes, 
+  carregarAnimesPorGenero 
+} from './modules/inicio.js';
 
-  window.addEventListener('scroll', () => {
-    if (!header) return;
+import { gerenciarTelaInfo } from './modules/info.js';
+import { gerenciarTelaPlayer } from './modules/playerView.js';
+import { inicializarPesquisa } from './modules/pesquisa.js';
+import { ocultarSplashScreen, exibirErroSplash } from './modules/splash.js';
 
-    const currentScrollY = window.scrollY;
-
-    // Se rolar para baixo e passar de 50px, oculta o cabeçalho
-    if (currentScrollY > lastScrollY && currentScrollY > 50) {
-      header.classList.add('header-hidden');
-    } else {
-      // Se rolar para cima, exibe o cabeçalho
-      header.classList.remove('header-hidden');
-    }
-
-    lastScrollY = currentScrollY;
-  });
-}
-
-// --- MÓDULO TV INTEGRADO DIRECTAMENTE ---
-function inicializarNavegacaoTV() {
-  window.addEventListener("keydown", (e) => {
-    const chavesSuportadas = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", "BackSpace", "Escape"];
-    if (chavesSuportadas.includes(e.key)) {
-      document.body.classList.add("tv-mode");
-    }
-  });
-
-  document.addEventListener("focus", (event) => {
-      const elementoFocado = event.target;
-      if (elementoFocado && elementoFocado !== document.body) {
-        elementoFocado.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
-      }
-    }, true
-  );
-
-  window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" || event.keyCode === 27 || event.keyCode === 10009) {
-      const overlay = document.querySelector('.overlay-ep[aria-hidden="false"]');
-      if (overlay) {
-        event.preventDefault();
-        const btnFechar = overlay.querySelector('.overlay-close');
-        if (btnFechar) btnFechar.click();
-        return;
-      }
-
-      if (window.location.hash && window.location.hash !== "#inicio") {
-        event.preventDefault();
-        window.history.back();
-      }
-    }
-  });
-}
-
-function atualizarElementosFocaveis(container = document) {
-  const seletores = ".card, .card-ep, .btn-hero, .tab-item, button, a[href]";
-  const elementos = container.querySelectorAll(seletores);
-
-  elementos.forEach((el) => {
-    if (!el.hasAttribute("tabindex")) {
-      el.setAttribute("tabindex", "0");
-    }
-  });
-}
-
-// --- ROTEADOR ---
+// --- ROTEADOR DE NAVEGAÇÃO POR HASH ---
 function navegarPeloHash() {
   const rawHash = window.location.hash || "#inicio";
   const [hashLimpa] = rawHash.split("?");
@@ -121,43 +64,38 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   try {
-    // 1. Executa todas as buscas de dados iniciais em paralelo
+    // 1. Carregamento dos dados iniciais da aplicação
     await Promise.all([
       carregarHeroBanner(),
       carregarAnimesRecomendados(),
       carregarAnimesRecentes(),
-      carregarNovosEpisodios(),
       carregarAnimesPorGenero()
     ]);
     
     inicializarPesquisa();
-    inicializarNavegacaoTV();
-    inicializarScrollHeader();
 
+    // 2. Evento para tratamento de troca de Hash / Rotas
     window.addEventListener("hashchange", async () => {
       try {
         navegarPeloHash();
-        fecharOverlayEp();
         await gerenciarTelaInfo();
         await gerenciarTelaPlayer();
-        atualizarElementosFocaveis();
       } catch (e) {
         console.error("Erro ao alterar rota:", e);
       }
     });
 
+    // 3. Renderização inicial das rotas
     navegarPeloHash();
     await gerenciarTelaInfo();
     await gerenciarTelaPlayer();
-    atualizarElementosFocaveis();
 
-    // 2. TUDO OK: Esconde a tela de Splash!
+    // 4. Finalização da inicialização
     ocultarSplashScreen();
 
   } catch (erroGeral) {
     console.error("Erro crítico na inicialização:", erroGeral);
     
-    // 3. ERRO: Exibe a interface de falha com os detalhes
     exibirErroSplash(
       "Ocorreu uma falha ao carregar os dados do aplicativo.",
       erroGeral
