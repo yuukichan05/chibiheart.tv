@@ -1,19 +1,26 @@
 /* ==========================================
    STYLES PARA A TELA #info (modo TV / Netflix-like)
-   - Episódios em lista vertical integrados na página (SEM rolagem interna)
+   - Banner 16:9 Full Width
+   - Conteúdo sobreposto no canto inferior esquerdo
    ========================================= */
 
-/* Depende de variáveis definidas no main.css:
-   --content-inset, --accent-red, --text-color, --text-secondary, --bg-color
-*/
+/* Container Principal */
+#info {
+  position: relative;
+  background-color: #141414;
+  color: #fff;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+}
 
-/* Container do hero + banner */
+/* Container do hero + banner 16/9 */
 #info .info-hero {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 6;
-  min-height: 36vh;
-  max-height: 52vh;
+  aspect-ratio: 16 / 9;
+  max-height: 85vh;
+  min-height: 380px;
   overflow: hidden;
   background-color: #000;
   display: block;
@@ -23,97 +30,109 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
   display: block;
   will-change: transform;
   transition: transform 12s linear;
 }
 
+/* Sombra e Degradê característico da Netflix (Escuro na esquerda e na base) */
 #info .info-hero .hero-overlay {
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(180deg, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0.2) 40%, rgba(20,20,20,0.9) 100%),
-    linear-gradient(90deg, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0.0) 40%);
+  background: 
+    linear-gradient(0deg, #141414 0%, rgba(20, 20, 20, 0.4) 40%, transparent 80%),
+    linear-gradient(90deg, #141414 0%, rgba(20, 20, 20, 0.8) 30%, transparent 70%);
   pointer-events: none;
   z-index: 2;
 }
 
-/* Botão voltar */
+/* Botão voltar flutuante */
 #info .btn-voltar {
   position: absolute;
-  left: calc(var(--content-inset) - 40px);
-  top: 18px;
+  left: 4%;
+  top: 24px;
   z-index: 10;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
-  border-radius: 8px;
-  background: rgba(10,10,10,0.6);
-  color: var(--text-color);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffffff;
   text-decoration: none;
+  backdrop-filter: blur(4px);
   will-change: transform, opacity;
-  transition: transform 180ms ease, opacity 180ms ease;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  transition: transform 180ms ease, background 180ms ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
 }
 
 #info .btn-voltar:hover,
 #info .btn-voltar:focus {
-  transform: scale(1.06);
+  transform: scale(1.1);
   outline: none;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Conteúdo detalhado abaixo do hero (alinhado ao recuo) */
+/* Conteúdo detalhado POR CIMA do Banner (Canto Inferior Esquerdo) */
 #info .info-content {
-  padding: 18px 4% 40px;
-  padding-left: var(--content-inset);
-  max-width: calc(100% - var(--content-inset) - 48px);
-  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 4% 35px 4%;
+  max-width: 650px; /* Limite de largura estilo Netflix */
   box-sizing: border-box;
-  position: relative;
+  z-index: 3;
 }
 
 #info .info-header-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
-  max-width: 900px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 #info #info-titulo {
-  font-size: clamp(1.6rem, 3.6vw, 2.6rem);
-  font-weight: 800;
-  color: var(--text-color);
+  font-size: clamp(2rem, 4.5vw, 3.8rem);
+  font-weight: 900;
+  color: #ffffff;
   line-height: 1.05;
-  text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+  margin: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
 }
 
 #info .info-meta {
   display: flex;
   gap: 10px;
   align-items: center;
-  color: var(--text-secondary);
+  color: #a3a3a3;
   font-weight: 600;
+  font-size: 1rem;
+  margin-top: 4px;
 }
 
 #info .info-genres {
   display: flex;
   gap: 8px;
-  margin: 12px 0;
+  margin: 10px 0;
   flex-wrap: wrap;
 }
 
 #info .info-genres .badge-tag {
-  background: rgba(255,255,255,0.04);
-  color: var(--text-color);
-  padding: 6px 10px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 4px;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  backdrop-filter: blur(4px);
 }
 
 #info .acao-principal-container {
@@ -123,122 +142,102 @@
   align-items: center;
 }
 
-/* Botões principais */
+/* Botão ASSISTIR estilo Netflix */
 .btn-disney-play {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 28px;
-  background: var(--accent-red);
-  color: #fff;
+  gap: 8px;
+  padding: 10px 26px;
+  background: #ffffff;
+  color: #000000;
   font-weight: 800;
-  border-radius: 6px;
+  font-size: 1.05rem;
+  border-radius: 4px;
   text-decoration: none;
   will-change: transform, opacity;
-  transition: var(--gpu-transition);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-  border: 0;
-}
-
-.btn-disney-info {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
-  background: rgba(255,255,255,0.06);
-  color: var(--text-color);
-  font-weight: 700;
-  border-radius: 6px;
-  text-decoration: none;
-  will-change: transform, opacity;
-  transition: var(--gpu-transition);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.4);
   border: 0;
 }
 
 .btn-disney-play:hover,
-.btn-disney-play:focus,
-.btn-disney-info:hover,
-.btn-disney-info:focus {
-  transform: translateY(-2px) scale(1.02);
+.btn-disney-play:focus {
+  background: rgba(255, 255, 255, 0.75);
+  transform: scale(1.05);
   outline: none;
 }
 
 #info .info-synopsis-container {
-  margin-top: 8px;
-  max-width: 900px;
+  margin-top: 4px;
 }
 
 #info #info-sinopse {
-  color: var(--text-secondary);
-  line-height: 1.6;
-  max-width: 80ch;
+  color: #e5e5e5;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* ==========================================
-   EPISODES - agora integrados na página (SEM rolagem interna)
+   EPISÓDIOS - Posicionado abaixo do Banner
    ========================================= */
 
-/* Container de episódios geral */
 #container-episodios {
-  margin-top: 28px;
-  padding-left: var(--content-inset);
-  padding-right: 4%;
+  position: relative;
+  z-index: 4;
+  margin-top: 20px;
+  padding: 0 4% 40px 4%;
   box-sizing: border-box;
+  background: #141414;
 }
 
-/* Header episodes - título e seletor de temporada */
 #container-episodios .episodes-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
-  max-width: calc(100% - var(--content-inset));
-  padding-right: var(--content-inset);
-  box-sizing: border-box;
+  margin-bottom: 16px;
 }
 
 #container-episodios .episodes-header .titulo-categoria {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: 700;
+  color: #fff;
 }
 
-/* Lista de episódios (vertical) — integrada ao documento (SEM overflow interno) */
 #lista-episodios {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  /* sem max-height, sem overflow: deixa a página rolar naturalmente */
-  will-change: transform;
-  scroll-behavior: smooth;
-  padding-bottom: 8px;
 }
 
-/* Cada card de episódio em linha (preenchendo largura disponível) */
+/* Card de Episódio */
 .card-ep {
   width: 100%;
-  max-width: 980px; /* limita em telas muito largas */
+  max-width: 980px;
   display: flex;
   gap: 16px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
   padding: 12px;
   align-items: center;
   cursor: pointer;
-  will-change: transform, opacity;
-  transition: transform 180ms cubic-bezier(.2,1,.22,1), box-shadow 180ms ease;
+  transition: transform 180ms ease, background-color 180ms ease;
   box-sizing: border-box;
 }
 
-/* Mini-thumb maior na lista vertical */
 .card-ep .ep-media {
-  width: 260px;
-  min-width: 260px;
-  height: 146px;
-  border-radius: 6px;
+  width: 220px;
+  min-width: 220px;
+  height: 125px;
+  border-radius: 4px;
   overflow: hidden;
-  background: #111;
+  background: #000;
   position: relative;
   flex-shrink: 0;
 }
@@ -250,112 +249,102 @@
   display: block;
 }
 
-/* Info do episódio (ao lado direito da thumb) */
 .card-ep .ep-info {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 0;
-  flex: 1 1 auto;
+  justify-content: center;
+  flex: 1;
+  overflow: hidden;
 }
 
 .card-ep .card-title-ep {
-  font-size: 1.05rem;
-  font-weight: 800;
-  color: var(--text-color);
-  line-height: 1.1;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .card-ep .ep-duration {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+  color: #a3a3a3;
+  font-size: 0.85rem;
 }
 
-/* Sinopse curta na lista (opcional) */
-.card-ep .ep-desc {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+.card-descricao-ep {
+  font-size: 0.85rem;
+  color: #a3a3a3;
+  margin: 4px 0 0 0;
   line-height: 1.4;
-  margin-top: 6px;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  height: 2.8em;
   overflow: hidden;
 }
 
-/* Focus/Hover do card (GPU-only) */
+.card-descricao-ep .marquee-content {
+  display: block;
+  animation: marqueeVertical 10s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+}
+
+@keyframes marqueeVertical {
+  0%, 25% { transform: translateY(0); }
+  75%, 100% { transform: translateY(calc(-100% + 2.8em)); }
+}
+
+.card-ep:hover .marquee-content {
+  animation-play-state: paused;
+}
+
 .card-ep:hover,
 .card-ep:focus {
-  transform: scale(1.03);
-  z-index: 20;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.01);
+  outline: none;
 }
 
-/* Barra de progresso (transform: scaleX) */
+/* Progresso de reprodução */
 .barra-progresso-container {
   width: 100%;
-  height: 6px;
-  background: rgba(255,255,255,0.04);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 8px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  position: absolute;
+  bottom: 0;
+  left: 0;
 }
 
 .barra-progresso-preenchimento {
   height: 100%;
-  background: var(--accent-red);
+  background: #e50914; /* Vermelho Netflix */
   transform-origin: left center;
   transform: scaleX(0);
-  transition: transform 180ms linear;
 }
 
 /* ==========================================
-   FOCUS VISUAL (IMPORTANTE PARA NAVEGAÇÃO POR SETAS)
+   RESPONSIVIDADE (Celulares e Tablets)
    ========================================= */
-#info a:focus,
-#info button:focus,
-#info .card-ep:focus,
-#info .btn-disney-play:focus,
-#info .btn-disney-info:focus {
-  outline: 3px solid rgba(255,255,255,0.08);
-  outline-offset: 6px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-  transform: translateY(-2px) scale(1.02);
-}
+@media (max-width: 768px) {
+  #info .info-hero {
+    aspect-ratio: 16 / 9;
+    height: auto;
+    max-height: none;
+  }
 
-/* Remove focus ring for mouse click (keeps for keyboard) */
-#info a:focus:not(:focus-visible),
-#info button:focus:not(:focus-visible),
-#info .card-ep:focus:not(:focus-visible) {
-  outline: none;
-  box-shadow: none;
-  transform: none;
-}
+  /* Em telas pequenas, o texto passa para baixo do banner para não cortar */
+  #info .info-content {
+    position: relative;
+    height: auto;
+    max-height: none;
+    padding: 20px 4%;
+    max-width: 100%;
+    margin-top: -50px;
+  }
 
-/* ==========================================
-   RESPONSIVO (ajuste de colunas / tamanhos)
-   ========================================= */
-@media (max-width: 1100px) {
-  .card-ep { flex-direction: row; max-width: 100%; padding: 10px; }
-  .card-ep .ep-media { width: 220px; min-width: 220px; height: 124px; }
-  #info .info-content { padding-left: 18px; padding-right: 18px; max-width: 100%; }
-  #container-episodios { padding-left: 18px; padding-right: 18px; }
-}
+  .card-ep {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-@media (max-width: 700px) {
-  /* Em telas muito pequenas, empilha a thumb em cima do texto */
-  .card-ep { flex-direction: column; align-items: stretch; gap: 10px; }
-  .card-ep .ep-media { width: 100%; min-width: 100%; height: 160px; }
+  .card-ep .ep-media {
+    width: 100%;
+    min-width: 100%;
+    height: 180px;
+  }
 }
-
-/* ==========================================
-   NOTAS:
-   - Cada .card-ep deve ter tabindex="0" (para navegação por setas).
-   - O JS de navegação por setas usa scrollIntoView para centralizar o item focado;
-     agora isso rola a página inteira (não há rolagem interna).
-   - Todos os efeitos visuais usam transform/opacity para performance GPU.
-   ========================================== */

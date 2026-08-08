@@ -16,16 +16,15 @@
     --accent-red: #e50914;
 
     /* Dimensões Estáticas */
-    --sidebar-width: 260px;
-    --sidebar-collapsed-visible: 80px; /* largura visível quando recolhida */
+    --sidebar-width: 200px;
+    --sidebar-collapsed-visible: 60px; /* Largura recolhida reduzida para diminuir a margem esquerda */
     --sidebar-collapsed-offset: calc(-1 * (var(--sidebar-width) - var(--sidebar-collapsed-visible)));
-    --label-gap: 16px; /* distância entre ícone e rótulo */
+    --label-gap: 16px; /* Distância entre o ícone e o texto */
 
-    /* Espaço fixo coerente para o conteúdo (evita percentuais enormes em telas largas)
-       REDUZI para deixar as seções mais próximas da sidebar */
-    --content-inset: calc(var(--sidebar-collapsed-visible) + 18px);
+    /* Espaço fixo coerente para o conteúdo principal */
+    --content-inset: 25px;
 
-    /* deslocamento quando a sidebar expande (dinâmico) */
+    /* Deslocamento quando a sidebar expande */
     --shift-amount: calc(var(--sidebar-width) - var(--sidebar-collapsed-visible));
 
     /* Transição de GPU global */
@@ -53,80 +52,79 @@ body {
 }
 
 /* ==========================================
-   SIDEBAR (GPU-ACCELERATED TRANSFORMS)
+   SIDEBAR CORRIGIDA (EXPANSE DA DIREITA)
    ========================================= */
 .tab-bar {
     position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: var(--sidebar-width);
+    /* Começa recolhida na largura de 60px */
+    width: var(--sidebar-collapsed-visible);
     background: linear-gradient(90deg, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.85) 100%);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 40px 12px;
+    padding: 40px 0;
     z-index: 1000;
     box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
 
-    will-change: transform;
-    transform: translateX(var(--sidebar-collapsed-offset));
-    transition: var(--gpu-transition);
+    /* Transição suave da largura da ponta direita */
+    transform: none; /* Sem offset negativo jogando a barra fora da tela */
+    transition: width 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+    overflow: hidden; /* Impede qualquer texto de pular/vazar para fora */
 }
 
-/* Expand sidebar (hover/focus-within) via GPU transform only */
+/* Quando expandir no hover, focus-within ou pela classe .expanded controlada via JS */
 .tab-bar:hover,
-.tab-bar:focus-within {
-    transform: translateX(0);
+.tab-bar:focus-within,
+.tab-bar.expanded {
+    width: var(--sidebar-width);
 }
 
 .tab-bar .tab-item {
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
     height: 60px;
+    width: var(--sidebar-width); /* Mantém largura interna fixa para não deformar o conteúdo */
     margin: 6px 0;
     color: var(--text-secondary);
     text-decoration: none;
     font-size: 1.05rem;
     font-weight: 600;
-    padding: 0 12px;
+    padding-left: 15px; /* Centraliza o ícone perfeitamente na faixa de 60px */
     transition: color 0.18s ease;
-    overflow: visible;
     outline: none;
 }
 
-/* Ícone sempre à direita do bloco do botão (permite rótulo aparecer à esquerda) */
+/* Ícone fixo no lugar - não pula nem anda */
 .tab-bar .tab-item .material-symbols-outlined {
-    font-size: 32px;
+    font-size: 30px;
     color: inherit;
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    will-change: transform;
+    flex-shrink: 0;
+    width: 30px;
+    text-align: center;
 }
 
-/* Rótulo absoluto (content: attr(aria-label)) */
-.tab-bar .tab-item::before {
+/* Rótulo de texto - alinhado ao lado do ícone com fade-in */
+.tab-bar .tab-item::after {
     content: attr(aria-label);
-    position: absolute;
-    right: calc(12px + 32px + var(--label-gap));
-    top: 50%;
-    transform: translateX(8px) translateY(-50%);
+    margin-left: var(--label-gap);
     opacity: 0;
     color: var(--text-color);
     font-weight: 700;
     white-space: nowrap;
     pointer-events: none;
-    will-change: transform, opacity;
-    transition: var(--gpu-transition);
+    transition: opacity 0.25s ease;
     text-shadow: 0 2px 10px rgba(0,0,0,0.6);
-    font-size: 1.05rem;
+    font-size: 1rem;
 }
 
-.tab-bar:hover .tab-item::before,
-.tab-bar:focus-within .tab-item::before {
-    transform: translateX(0) translateY(-50%);
+/* Exibir texto com suavidade somente quando expandida */
+.tab-bar:hover .tab-item::after,
+.tab-bar:focus-within .tab-item::after,
+.tab-bar.expanded .tab-item::after {
     opacity: 1;
 }
 
@@ -142,180 +140,158 @@ body {
 }
 
 /* ==========================================
-   CONTEÚDO PRINCIPAL (SLIDE VIA GPU)
+   CONTEÚDO PRINCIPAL (REDUZ LARGURA JUNTO)
    ========================================= */
 .main-content {
-    /* mantém a faixa visível da sidebar sempre */
     margin-left: var(--sidebar-collapsed-visible);
     width: calc(100% - var(--sidebar-collapsed-visible));
     min-height: 100vh;
 
-    will-change: transform;
-    transform: translateX(0);
-    transition: var(--gpu-transition);
+    transition: margin-left 0.35s cubic-bezier(0.25, 1, 0.5, 1), 
+                width 0.35s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Quando a sidebar expande, empurra a main por transform */
+/* Quando a sidebar expande (hover, focus ou .expanded), empurra o conteúdo suavemente */
 body:has(.tab-bar:hover) .main-content,
-body:has(.tab-bar:focus-within) .main-content {
-    transform: translateX(var(--shift-amount));
+body:has(.tab-bar:focus-within) .main-content,
+body:has(.tab-bar.expanded) .main-content {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    transform: none;
 }
 
 /* ==========================================
-   VIEW INÍCIO - HERO BANNER 16/9
+   VIEW INÍCIO - HERO BANNER
    ========================================= */
-.hero-banner {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    max-height: 75vh;
-    overflow: hidden;
-    background-color: #000;
-    border-bottom: 6px solid rgba(0,0,0,0.25);
-}
-
 .hero-banner-slide {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 85vh;
+    overflow: hidden;
+    background-color: var(--bg-color);
 }
 
 .hero-banner-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
+    object-position: center 20%;
     will-change: transform;
-    transition: transform 12s linear;
+    transform: translateZ(0);
 }
 
 .hero-banner-overlay {
     position: absolute;
-    inset: 0;
-    background: linear-gradient(0deg, #141414 0%, rgba(20, 20, 20, 0.35) 40%, rgba(20, 20, 20, 0.85) 100%),
-                linear-gradient(90deg, #141414 0%, rgba(20,20,20,0.0) 55%);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(70deg, rgba(20, 20, 20, 0.95) 0%, rgba(20, 20, 20, 0.5) 40%, transparent 80%),
+                linear-gradient(to bottom, transparent 40%, var(--bg-color) 100%);
     pointer-events: none;
 }
 
-/* Usa o mesmo recuo fixo do conteúdo para alinhamento coerente */
 .hero-banner-content {
     position: absolute;
-    bottom: 12%;
+    bottom: 15%;
     left: var(--content-inset);
-    max-width: 700px;
+    max-width: 650px;
     z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
     will-change: transform, opacity;
 }
 
-/* Badge/titulo/descrição */
 .hero-badge-tag {
-    background-color: var(--accent-red);
-    color: #fff;
-    font-size: 0.78rem;
+    align-self: flex-start;
+    font-size: 0.75rem;
     font-weight: 800;
-    padding: 6px 10px;
-    border-radius: 4px;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    color: #e50914;
+    text-transform: uppercase;
 }
 
 .hero-banner-title {
-    font-size: clamp(2rem, 4vw, 3.6rem);
-    font-weight: 800;
-    margin: 12px 0;
-    line-height: 1.05;
-    text-shadow: 2px 2px 14px rgba(0, 0, 0, 0.75);
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #ffffff;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 .hero-banner-desc {
-    font-size: 1.02rem;
-    color: var(--text-secondary);
-    line-height: 1.4;
-    margin-bottom: 20px;
+    font-size: clamp(0.95rem, 1.2vw, 1.2rem);
+    line-height: 1.5;
+    color: #e5e5e5;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* Hero actions com ênfase e animação por transform */
 .hero-actions {
     display: flex;
-    gap: 14px;
+    gap: 16px;
+    margin-top: 10px;
 }
 
-/* =========================
-   BOTÕES DO HERO (Assistir / Detalhes)
-   - Reintegrados do CSS antigo e refinados
-   - Mantive apenas transform/opacity para animações
-   ========================= */
 .btn-hero {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 28px;
+    padding: 12px 32px;
     font-size: 1.05rem;
     font-weight: 700;
-    border-radius: 6px;
+    border-radius: 25px;
+    border: none;
     text-decoration: none;
     cursor: pointer;
-    will-change: transform, opacity;
-    transition: var(--gpu-transition);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-    border: 0;
+    will-change: transform;
+    transform: translateZ(0);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+}
+
+.btn-hero:hover, 
+.btn-hero:focus-visible {
+    transform: scale(1.05) translateZ(0);
+    outline: none;
 }
 
 .btn-hero-play {
     background-color: #ffffff;
     color: #000000;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
-}
-
-.btn-hero-info {
-    background-color: rgba(109, 109, 110, 0.75);
-    color: #ffffff;
-    box-shadow: none;
-}
-
-/* Ícone interno (material symbol) padding e tamanho */
-.btn-hero .material-symbols-outlined {
-    margin-right: 10px;
-    font-size: 20px;
-}
-
-/* Hover / Focus — apenas transform e mudanças de cor simples */
-.btn-hero:hover,
-.btn-hero:focus {
-    transform: scale(1.06);
-    outline: none;
 }
 
 .btn-hero-play:hover,
-.btn-hero-play:focus {
-    background-color: rgba(255,255,255,0.92);
+.btn-hero-play:focus-visible {
+    background-color: #e6e6e6;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.btn-hero-info {
+    background-color: rgba(109, 109, 110, 0.7);
+    color: #ffffff;
+    backdrop-filter: blur(4px);
 }
 
 .btn-hero-info:hover,
-.btn-hero-info:focus {
-    background-color: rgba(109,109,110,0.6);
-}
-
-/* Foco acessível (remoto/teclado) */
-.btn-hero:focus-visible {
-    outline: 3px solid rgba(255,255,255,0.08);
-    outline-offset: 6px;
+.btn-hero-info:focus-visible {
+    background-color: rgba(109, 109, 110, 0.9);
+    box-shadow: 0 0 15px rgba(109, 109, 110, 0.4);
 }
 
 /* ==========================================
-   SEÇÕES (ALINHAR TANTO .secao-categoria quanto .secao-genero-container)
-   - Usa recuo fixo para evitar espaçamentos variáveis em telas largas
+   SEÇÕES DE CONTEÚDO
    ========================================= */
 .secao-categoria,
 .secao-genero-container {
     padding: 24px 0 24px;
-    padding-left: var(--content-inset); /* alinhamento consistente com o hero */
+    padding-left: var(--content-inset);
 }
 
-/* Ajuste fino para títulos */
 .titulo-categoria {
     font-size: 1.4rem;
     font-weight: 600;
@@ -323,7 +299,6 @@ body:has(.tab-bar:focus-within) .main-content {
     color: #e5e5e5;
 }
 
-/* Grid horizontal com scroll */
 .cards-grid {
     display: flex;
     gap: 12px;
@@ -331,14 +306,13 @@ body:has(.tab-bar:focus-within) .main-content {
     scroll-behavior: smooth;
     padding-bottom: 16px;
     padding-top: 8px;
-    padding-left: 0; /* removido padding extra que somava deslocamento */
+    padding-left: 0;
 }
 
 .cards-grid::-webkit-scrollbar {
     height: 0px;
 }
 
-/* Cards Proporção 2/3 */
 .card.poster {
     flex: 0 0 auto;
     width: 220px;
@@ -376,7 +350,6 @@ body:has(.tab-bar:focus-within) .main-content {
     font-weight: 400;
 }
 
-/* Hover/focus - transform only */
 .card.poster:hover,
 .card.poster:focus {
     transform: scale(1.14);
@@ -389,7 +362,6 @@ body:has(.tab-bar:focus-within) .main-content {
     font-weight: 700;
 }
 
-/* Barra de progresso via transform */
 .barra-progresso-preenchimento {
     width: 100%;
     height: 100%;
@@ -400,7 +372,6 @@ body:has(.tab-bar:focus-within) .main-content {
     transition: transform 0.22s linear;
 }
 
-/* Foco acessível */
 .tab-bar .tab-item:focus-visible,
 .card.poster:focus-visible,
 .btn-hero:focus-visible {
@@ -410,20 +381,12 @@ body:has(.tab-bar:focus-within) .main-content {
 }
 
 /* ==========================================
-   Pequenos ajustes responsivos
+   RESPONSIVIDADE
    ========================================= */
 @media (max-width: 1100px) {
-    :root {
-        --content-inset: calc(var(--sidebar-collapsed-visible) + 12px);
-    }
     .card.poster { width: 180px; }
 }
 
 @media (min-width: 1700px) {
-    /* em telas muito largas, aumenta o tamanho dos cards sem usar percentuais para evitar gaps */
     .card.poster { width: 240px; }
 }
-
-/* ==========================================
-   Notas: resto do arquivo preservado para outras views (player, info etc.)
-   ========================================= */
