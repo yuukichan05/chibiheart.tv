@@ -51,7 +51,7 @@ export async function carregarHeroBanner() {
     const btnInfo = clone.querySelector('.btn-hero-info');
 
     /* Usa primeiramente a chave 'poster', com fallback para 'banner' */
-    if (img) img.src = anime.poster || anime.banner || '';
+    if (img) img.src = anime.banner || anime.poster || '';
     if (title) title.textContent = anime.titulo || '';
     if (desc) {
       desc.textContent = anime.sinopse || '';

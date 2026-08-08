@@ -391,7 +391,7 @@ function preencherMetadados(item, containerGeneros) {
     const infoAno = document.getElementById("info-ano");
     const infoSinopse = document.getElementById("info-sinopse");
 
-    if (infoBanner) infoBanner.src = item.poster || item.banner || "";
+    if (infoBanner) infoBanner.src = item.banner || item.poster || "";
     if (infoTitulo) infoTitulo.textContent = item.titulo || "Sem título";
     if (infoAno) infoAno.textContent = item.ano || "----";
     if (infoSinopse) infoSinopse.textContent = item.sinopse || "Sem sinopse disponível.";
